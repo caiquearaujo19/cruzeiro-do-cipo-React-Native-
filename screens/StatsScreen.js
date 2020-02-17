@@ -14,7 +14,8 @@ const firestore = firebase.firestore();
 export default function StatsScreen() {
 
   const [ matches , setMatches ] = useState([]);
-  const [ players , setPlayers ] = useState([]);
+  const [ scorers , setScorers ] = useState([]);
+  const [ assists , setAssists ] = useState([]);
   const [wins, setWins] = useState(0);
   const [draws, setDraws] = useState(0);
   const [defeats, setDefeats] = useState(0);
@@ -45,7 +46,7 @@ export default function StatsScreen() {
   }, []);
 
   useEffect(() => {
-    firestore.collection("players").get()
+    firestore.collection("players").orderBy('goals').get()
     .then(querySnapshot => {
       const list = [];
       querySnapshot.forEach(doc => {
@@ -58,7 +59,26 @@ export default function StatsScreen() {
         });
       });
       
-      setPlayers(list);
+      setScorers(list.reverse());
+    })
+    .catch(err => alert("Erro ao pegar os jogadores: " + err));
+  }, [])
+
+  useEffect(() => {
+    firestore.collection("players").orderBy('assists').get()
+    .then(querySnapshot => {
+      const list = [];
+      querySnapshot.forEach(doc => {
+        const { name, goals, assists } = doc.data();
+        list.push({
+          id: doc.id,
+          name,
+          goals,
+          assists
+        });
+      });
+      
+      setAssists(list.reverse());
     })
     .catch(err => alert("Erro ao pegar os jogadores: " + err));
   }, [])
@@ -126,7 +146,7 @@ export default function StatsScreen() {
       } titleStyle={styles.cardTitle} containerStyle={[styles.card, {flex: 1, overflow: 'hidden'}]}>
         <FlatList
           contentContainerStyle={{paddingBottom: 60}}
-          data={players}
+          data={scorers}
           renderItem={({item}) => item.goals > 0 ? <ScorersListItem key={item.id} scorer={item}/> : false}
         />
       </Card>
@@ -138,7 +158,7 @@ export default function StatsScreen() {
       } titleStyle={styles.cardTitle} containerStyle={[styles.card, {flex: 1, overflow: 'hidden'}]}>
         <FlatList
           contentContainerStyle={{paddingBottom: 60}}
-          data={players}
+          data={assists}
           renderItem={({item}) => item.assists > 0 ? <AssistsListItem key={item.id} scorer={item}/> : false}
         />
       </Card>

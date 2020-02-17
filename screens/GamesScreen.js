@@ -58,16 +58,28 @@ export default function GamesScreen(props) {
         });
       });
 
-      setMatches(list);
+      setMatches(orderByDate(list));
     })
     .catch(err => alert("Erro ao acessar os jogos: ", err));
   }, []);
+
+  const orderByDate = (matches) => {
+    matches.sort((a, b) => {
+      var aMonth = parseInt(a.date.slice(3, 5), 10);
+      var aDay = parseInt(a.date.slice(0, 2), 10);
+      var bMonth = parseInt(b.date.slice(3, 5), 10);
+      var bDay = parseInt(b.date.slice(0, 2), 10);
+      return aMonth > bMonth ? -1 : aMonth < bMonth ? 1 : aDay > bDay ? -1 : aDay > bDay ? 1 : 0;
+    })
+
+    return matches;
+  }
 
   return (
     <View style={styles.container}>
       <Card title={
         <ImageBackground source={Banner} style={styles.cardHeader}>
-          <Text style={styles.cardTitle}>Próxixmo jogo</Text>
+          <Text style={styles.cardTitle}>Próximo jogo</Text>
         </ImageBackground>
       } containerStyle={styles.card}>
         {

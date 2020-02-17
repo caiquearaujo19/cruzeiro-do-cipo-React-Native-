@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Platform } from 'react-native';
 import { View, Text, StyleSheet, ImageBackground } from 'react-native';
 import { ListItem, Card } from 'react-native-elements';
@@ -33,27 +33,32 @@ export default function GameDetailsScreen(props) {
           <Text style={styles.goals}>{match.goalsAdversary}</Text>
         </View>
       </Card>
-      <Card title={
-        <ImageBackground source={Banner} style={styles.cardHeader}>
-          <Text style={styles.cardTitle}>Gols e assistências</Text>
-        </ImageBackground>
-      } titleStyle={styles.cardTitle} containerStyle={styles.card}>
-        {
-          match.scorers.map((scorer, i) => (
-            <View key={i} style={styles.goalOccurrence}>
-              <Ionicons
-                name={Platform.OS === 'ios' ? 'ios-football' : 'md-football'}
-                size={35}
-                style={{ marginBottom: -3, marginRight: 10 }}
-                color="gray"
-              />
-              <View>
-                <Text style={styles.scorer}>{scorer.name}</Text>
-                {match.assists[i] !== null ? <Text style={styles.assist}>(Assist.: {match.assists[i].name})</Text> : false }
-              </View>
-            </View>
-          )) }
-      </Card>
+      {
+        match.goalsCipo > 0 ?
+          <Card title={
+            <ImageBackground source={Banner} style={styles.cardHeader}>
+              <Text style={styles.cardTitle}>Gols e assistências</Text>
+            </ImageBackground>
+          } titleStyle={styles.cardTitle} containerStyle={styles.card}>
+            {
+              match.scorers.map((scorer, i) => (
+                <View key={i} style={styles.goalOccurrence}>
+                  <Ionicons
+                    name={Platform.OS === 'ios' ? 'ios-football' : 'md-football'}
+                    size={35}
+                    style={{ marginBottom: -3, marginRight: 10 }}
+                    color="gray"
+                  />
+                  <View>
+                    <Text style={styles.scorer}>{scorer.name}</Text>
+                    {match.assists[i] !== null ? <Text style={styles.assist}>(Assist.: {match.assists[i].name})</Text> : null }
+                  </View>
+                </View>
+              )) }
+          </Card>
+        :
+          null
+      }
     </View>
   );
 }
@@ -92,7 +97,6 @@ const styles = StyleSheet.create({
     color: '#F0F0F0'
   },
   card: {
-    maxHeight: 255,
     padding: 0
   },
   cardHeader: {
